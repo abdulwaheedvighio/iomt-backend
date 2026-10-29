@@ -1,0 +1,20 @@
+IAT
+Rate
+Header_Length
+Min
+syn_count
+rst_count
+fin_count
+Protocol Type
+Tot sum
+syn_flag_number
+Max
+TCP
+Std
+ack_count
+Variance
+ack_flag_number
+ICMP
+Duration
+rst_flag_number
+psh_flag_number
