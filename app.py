@@ -15,7 +15,7 @@ from collections import deque
 from datetime import datetime, timezone
 import numpy as np
 import pandas as pd
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, Response
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 PORT = int(os.environ.get("PORT", 8000))
@@ -279,6 +279,32 @@ def alerts():
     return jsonify({"count": len(newest_first), "latest_id": latest_id, "alerts": newest_first})
 
 
+@app.get("/api/v1/alerts/csv")
+def download_alerts_csv():
+    import io
+    import csv
+    with LOCK:
+        output = io.StringIO()
+        writer = csv.writer(output)
+        writer.writerow(["id", "timestamp", "predicted_label", "category", "confidence", "actual_label"])
+        for a in reversed(ALERTS):
+            writer.writerow([
+                a["id"],
+                a["timestamp"],
+                a.get("predicted_label", a.get("attack_type", "")),
+                a.get("category", ""),
+                a.get("confidence", ""),
+                a.get("actual_label", "")
+            ])
+        csv_data = output.getvalue()
+
+    return Response(
+        csv_data,
+        mimetype="text/csv",
+        headers={"Content-disposition": "attachment; filename=iomt_alerts_export.csv"}
+    )
+
+
 @app.get("/api/v1/alerts/<int:alert_id>")
 def alert_by_id(alert_id):
     with LOCK:
@@ -296,11 +322,9 @@ def stats_trend():
         timestamps = []
         counts = []
         if TREND_HISTORY:
-            # Group by minute or time string
             bucket_map = {}
             for item in TREND_HISTORY:
                 ts = item["timestamp"]
-                # Get HH:MM
                 time_key = ts[11:16] if len(ts) >= 16 else ts
                 bucket_map[time_key] = bucket_map.get(time_key, 0) + 1
 
