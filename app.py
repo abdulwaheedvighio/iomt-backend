@@ -440,12 +440,22 @@ def lan_ip():
     except Exception:
         return "<laptop-ip>"
 
+import os
+
 if __name__ == "__main__":
     threading.Thread(target=stream_loop, daemon=True).start()
+    
+    # Environment se port uthayega, agar nahi mila toh default PORT use karega
+    port = int(os.environ.get("PORT", PORT))
+    
     print("Mode: %s | records in stream: %d | new record every %.1f s" % (MODE, len(STREAM), INTERVAL))
-    print("Dashboard on this laptop : http://localhost:%d" % PORT)
-    print("Dashboard on your phone  : http://%s:%d  (same Wi-Fi)" % (lan_ip(), PORT))
-    app.run(host="0.0.0.0", port=PORT, threaded=True)
+    print("Dashboard on this laptop : http://localhost:%d" % port)
+    print("Dashboard on your phone  : http://%s:%d  (same Wi-Fi)" % (lan_ip(), port))
+    
+    # host="0.0.0.0" aur port dynamic kar diya hai
+    app.run(host="0.0.0.0", port=port, threaded=True)
+
+    
 # if __name__ == "__main__":
 #     threading.Thread(target=stream_loop, daemon=True).start()
 #     print("Mode: %s | records in stream: %d | new record every %.1f s" % (MODE, len(STREAM), INTERVAL))
