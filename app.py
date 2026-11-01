@@ -440,10 +440,15 @@ def lan_ip():
     except Exception:
         return "<laptop-ip>"
 
-
 if __name__ == "__main__":
     threading.Thread(target=stream_loop, daemon=True).start()
     print("Mode: %s | records in stream: %d | new record every %.1f s" % (MODE, len(STREAM), INTERVAL))
     print("Dashboard on this laptop : http://localhost:%d" % PORT)
     print("Dashboard on your phone  : http://%s:%d  (same Wi-Fi)" % (lan_ip(), PORT))
     app.run(host="0.0.0.0", port=PORT, threaded=True)
+# if __name__ == "__main__":
+#     threading.Thread(target=stream_loop, daemon=True).start()
+#     print("Mode: %s | records in stream: %d | new record every %.1f s" % (MODE, len(STREAM), INTERVAL))
+#     print("Dashboard on this laptop : http://localhost:%d" % PORT)
+#     print("Dashboard on your phone  : http://%s:%d  (same Wi-Fi)" % (lan_ip(), PORT))
+#     app.run(host="0.0.0.0", port=PORT, threaded=True)
